@@ -28,26 +28,63 @@ THE SOFTWARE.
 #include "cocos2d.h"
 USING_NS_CC;
 
-class OrdinaryScene : public cocos2d::Scene
+class OrdinaryScene : public cocos2d::Layer
 {
 	cocos2d::TMXTiledMap* map;
+	cocos2d::TMXLayer* wall;
 	cocos2d::Sprite *character;
+	cocos2d::Sprite *enemy;
+	cocos2d::Sprite *arrow;
+	cocos2d::Sprite *heart[25];
+	cocos2d::Sprite *dot[2000];
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	bool isAttacking;
+	bool beAttacken=false;
+	int heartMask =0x01;
+	int dotMask = 0x01;
+	int characterMask = 0x01;
+	int arrowMask = 0x01;
+	int enemyMask = 0x01;
+	int coloroldtime;
+	bool beginblink;
+	Vec2 direction;
 public:
-	static cocos2d::Scene* createScene();
+	struct timeval now;
+	int heartoldTime[25];
+	bool heartiseaten[25] = { false };
+	bool heartisloading[25] = { false };
+	int dotoldTime[2000];
+	bool dotiseaten[2000] = { false };
+	bool dotisloading[2000] = { false };
 
+
+	bool onContactBegin(const PhysicsContact& contact);
+	static cocos2d::Scene* createScene();
 	virtual bool init();
 
 	// a selector callback
-	void menuCloseCallback(cocos2d::Ref* pSender);
 
-	void MenuStartNormal(cocos2d::Ref* pSender);
 	// implement the "static create()" method manually
 
-
 	CREATE_FUNC(OrdinaryScene);
+
+
 	void update(float delta) override;
 	virtual bool isKeyPressed(EventKeyboard::KeyCode keyCode);
 	void keyPressedDuration(EventKeyboard::KeyCode code);
+
+
+	void initHeart();
+	void initStar();
+
+
+
+private:
+	Point preTouchPoint;      // 上一个触摸点
+	Point currTouchPoint;     // 当前触摸点
+
+
 private:
 	std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
 };
